@@ -1,12 +1,11 @@
-// TEK DOSYA - lib/main.dart olarak kaydet
-// pubspec.yaml bağımlılıkları aşağıda
+// TEK DOSYA - lib/main.dart
 
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path/join.dart' as p;
+import 'package:path/path.dart' as p;
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -20,7 +19,6 @@ void main() async {
   runApp(ChangeNotifierProvider(create: (_) => provider, child: const PortfolioApp()));
 }
 
-// ==================== MODELS ====================
 enum AssetCategory {
   preciousMetals('Kıymetli Madenler'),
   stocks('Hisse Senetleri'),
@@ -38,17 +36,13 @@ class Asset extends Equatable {
   final String currency;
   final double? currentPrice;
   final DateTime? lastPriceUpdate;
-
   const Asset({required this.id, required this.name, required this.symbol, required this.category, required this.quantity, required this.averageCost, this.currency = 'TRY', this.currentPrice, this.lastPriceUpdate});
-
   double get totalCost => quantity * averageCost;
   double get currentValue => (currentPrice ?? averageCost) * quantity;
   double get unrealizedPnl => currentValue - totalCost;
   double get returnPercent => totalCost > 0 ? (unrealizedPnl / totalCost) * 100 : 0;
-
   Asset copyWith({String? id, String? name, String? symbol, AssetCategory? category, double? quantity, double? averageCost, String? currency, double? currentPrice, DateTime? lastPriceUpdate}) =>
       Asset(id: id ?? this.id, name: name ?? this.name, symbol: symbol ?? this.symbol, category: category ?? this.category, quantity: quantity ?? this.quantity, averageCost: averageCost ?? this.averageCost, currency: currency ?? this.currency, currentPrice: currentPrice ?? this.currentPrice, lastPriceUpdate: lastPriceUpdate ?? this.lastPriceUpdate);
-
   Map<String, dynamic> toMap() => {'id': id, 'name': name, 'symbol': symbol, 'category': category.name, 'quantity': quantity, 'averageCost': averageCost, 'currency': currency, 'currentPrice': currentPrice, 'lastPriceUpdate': lastPriceUpdate?.toIso8601String()};
   factory Asset.fromMap(Map<String, dynamic> m) => Asset(id: m['id'], name: m['name'], symbol: m['symbol'], category: AssetCategory.values.byName(m['category']), quantity: (m['quantity'] as num).toDouble(), averageCost: (m['averageCost'] as num).toDouble(), currency: m['currency'] ?? 'TRY', currentPrice: m['currentPrice'] != null ? (m['currentPrice'] as num).toDouble() : null, lastPriceUpdate: m['lastPriceUpdate'] != null ? DateTime.parse(m['lastPriceUpdate']) : null);
   @override List<Object?> get props => [id, name, symbol, category, quantity, averageCost, currency, currentPrice];
