@@ -24,6 +24,24 @@ jobs:
           channel: 'stable'
           cache: true
 
+      - name: Create proper Flutter project structure
+        run: |
+          flutter create --project-name portfolio_tracker --org com.personal .
+          # Keep our main.dart and pubspec if they exist
+          if [ -f lib/main.dart ]; then
+            cp lib/main.dart /tmp/main.dart.bak
+          fi
+          if [ -f pubspec.yaml ]; then
+            cp pubspec.yaml /tmp/pubspec.yaml.bak
+          fi
+          flutter create --project-name portfolio_tracker --org com.personal .
+          if [ -f /tmp/main.dart.bak ]; then
+            cp /tmp/main.dart.bak lib/main.dart
+          fi
+          if [ -f /tmp/pubspec.yaml.bak ]; then
+            cp /tmp/pubspec.yaml.bak pubspec.yaml
+          fi
+
       - name: Get dependencies
         run: flutter pub get
 
